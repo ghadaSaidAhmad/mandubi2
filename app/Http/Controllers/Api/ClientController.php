@@ -112,6 +112,7 @@ class ClientController extends Controller
                 foreach ($mandubsIDs as $mandubId) {
                     MandubOrders::create([
                         'order_id' => $order->id,
+                        'order_state' => 1,
                         'mandub_id' => $mandubId
                     ]);
                     //insert notification in database
@@ -119,6 +120,7 @@ class ClientController extends Controller
                         'order_id' => $order->id,
                         'mandub_id' => $mandubId,
                         'client_id' => $user->id,
+
                         'title' => 'new order',
                         'content' => $this->transNotification(1)
                     ]);
@@ -134,6 +136,7 @@ class ClientController extends Controller
             $notification['body'] = $this->transNotification(1);
             $data = [
                 'order_id' => $order->id,
+
                 'order_code' => $order->code
             ];
             $report = $this->sendMultiNotification($notification, $deviceTokens, $data);
@@ -333,6 +336,7 @@ class ClientController extends Controller
                 $notification['body'] = $this->transNotification(3);
                 $data = [
                     'order_id' => $order->id,
+                    'order_state' => 3,
                     'order_code' => $order->code
                 ];
                 //insert notification in database

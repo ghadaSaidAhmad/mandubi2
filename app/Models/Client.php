@@ -34,6 +34,24 @@ class Client extends Authenticatable implements JWTSubject
         'fcm_token',
         'local'
     ];
+    protected $appends =['rate'];
+
+    /**
+     * hash password when created .
+     */
+    public function getRateAttribute()
+    {
+        if (count($this->rates)>0) {
+            return  $this->rates()->sum('rate')/$this->rates()->count();
+        }
+    }
+    /**
+     * Get the rate of the mandub .
+     */
+    public function rates()
+    {
+        return $this->hasMany(ClientRate::class);
+    }
     /**
      * hash password when created .
      */

@@ -226,11 +226,13 @@ class MandubController extends Controller
                 'order_id' => $order->id,
                 'mandub_id' => $user->id,
                 'client_id' => $order->client_id,
+
                 'title' => 'accept order',
                 'content' => $this->transNotification(2)
             ]);
             $data = [
                 'order_id' => $order->id,
+                'order_state' => 2,
                 'order_code' => $order->code
             ];
             $report = $this->sendNotification($notification, $deviceTokens[0], $data);
@@ -271,6 +273,7 @@ class MandubController extends Controller
             $notification['body'] = $this->transNotification(4);
             $data = [
                 'order_id' => $order->id,
+                'order_state' => 4,
                 'order_code' => $order->code
             ];
             //insert notification in database
@@ -319,6 +322,7 @@ class MandubController extends Controller
             $notification['body'] = $this->transNotification(5);
             $data = [
                 'order_id' => $order->id,
+                'order_state' => 5,
                 'order_code' => $order->code
             ];
             //insert notification in database
@@ -366,6 +370,7 @@ class MandubController extends Controller
             $notification['body'] = $this->transNotification(6);
             $data = [
                 'order_id' => $order->id,
+                'order_state' => 6,
                 'order_code' => $order->code
             ];
             //insert notification in database
@@ -418,6 +423,7 @@ class MandubController extends Controller
             $notification['body'] = $this->transNotification(7);
             $data = [
                 'order_id' => $order->id,
+                'order_state' => 7,
             ];
             $user = auth('mandubs')->user();
             Notification::insert([
@@ -465,6 +471,7 @@ class MandubController extends Controller
             $notification['body'] = $this->transNotification(8);
             $data = [
                 'order_id' => $order->id,
+                'order_state' => 8,
             ];
             $user = auth('mandubs')->user();
             Notification::insert([
@@ -512,6 +519,7 @@ class MandubController extends Controller
             $notification['body'] = $this->transNotification(9);
             $data = [
                 'order_id' => $order->id,
+                'order_state' => 9,
             ];
             $user = auth('mandubs')->user();
             Notification::insert([
@@ -584,6 +592,7 @@ class MandubController extends Controller
                 $notification['body'] = $this->transNotification(10);
                 $data = [
                     'order_id' => $orderobj->id,
+                    'order_state' => 10,
                 ];
                 $user = auth('mandubs')->user();
                 Notification::insert([

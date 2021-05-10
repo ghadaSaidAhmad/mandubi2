@@ -34,6 +34,7 @@ class Mandub extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
     public $timestamps = true;
 
     /**
@@ -87,15 +88,38 @@ class Mandub extends Authenticatable implements JWTSubject
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+    protected $appends =['rate'];
 
     /**
      * hash password when created .
      */
-    public function setPasswordAttribute($pass){
+    public function getRateAttribute()
+    {
+        if (count($this->rates)>0) {
+          return  $this->rates()->sum('rate')/$this->rates()->count();
+        }
+    }
+    /**
+     * Get the rate of the mandub .
+     */
+    public function rates()
+    {
+        return $this->hasMany(MandubRate::class);
+    }
+
+
+    /**
+     * hash password when created .
+     */
+    public function setPasswordAttribute($pass)
+    {
+
 
         $this->attributes['password'] = Hash::make($pass);
 
     }
+
+
 
     /**
      * Get the orders of the mandub .
@@ -104,6 +128,7 @@ class Mandub extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(Order::class);
     }
+
     /**
      * Get the notifications of the mandub .
      */
@@ -128,6 +153,7 @@ class Mandub extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(MandubOrders::class);
     }
+
     /**
      * Get the orders of the mandub .
      */
