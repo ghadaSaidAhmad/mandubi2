@@ -16,7 +16,7 @@ class CreateClientRateTable extends Migration
         Schema::create('client_suggestions', function (Blueprint $table) {
             $table->id();
             $table->integer('client_id')->nullable()->constrained();
-            $table->integer('suggation_type')->nullable()->constrained();
+            $table->integer('suggation_type')->nullable();
             $table->integer('description')->nullable();
             $table->string('image')->nullable();
             $table->timestamps();

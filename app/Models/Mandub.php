@@ -65,7 +65,9 @@ class Mandub extends Authenticatable implements JWTSubject
         'paid',
         'rate',
         'fcm_token',
-        'local'
+        'local',
+        'phone_verified_at',
+        'verification_code'
 
 
     ];
@@ -78,6 +80,7 @@ class Mandub extends Authenticatable implements JWTSubject
     protected $hidden = [
         'password',
         'remember_token',
+        'rates'
     ];
 
     /**

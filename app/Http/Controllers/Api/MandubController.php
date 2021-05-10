@@ -732,5 +732,47 @@ class MandubController extends Controller
         }
         return response()->json($this->response, $this->code);
     }
+    /**
+     * Display the specified resource.
+     *
+     * @param \App\Models\Api\Area $area
+     * @return \Illuminate\Http\Response
+     */
+    public function showClient($id)
+    {
+        try {
+            $client = client::find($id);
+            $this->initResponse('success', $client, 200, 'data');
+        } catch (Exception $e) {
+            $this->initResponse('faild', $e->getMessage(), 400, 'error');
+        }
+        return response()->json($this->response, $this->code);
+    }
+
+    /**
+     * updateFcm accecept order
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function updateInfo(Request $request)
+    {
+        try {
+            $user = auth('clients')->user();
+            $result = $user->update($request->except('_token'));
+            if ($result) {
+                $this->initResponse('', 'info updated successfully ', 200, 'data');
+            } else {
+                $this->initResponse('', 'faild to update info ', 200, 'data');
+            }
+
+        } catch (Exception $e) {
+            $this->initResponse('', $e->getMessage(), 400, 'error');
+        }
+        return response()->json($this->response, $this->code);
+    }
+
+
+
+
 
 }

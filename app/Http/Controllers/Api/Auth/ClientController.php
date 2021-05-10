@@ -21,9 +21,29 @@ class ClientController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'register', 'completeRegister']]);
+        $this->middleware('auth:api', ['except' => ['login', 'register', 'completeRegister','verifyMobile']]);
     }
 
+    /**
+     * set mandub active and update his location
+     * @return \Illuminate\Http\Response
+     */
+
+    public function verifyMobile(Request $request)
+    {
+        //set mandub active and update his location
+        try {
+            $user = User::find($request->client_id);
+            $user->update([
+                'phone_verified_at' => $request->phone_verified_at,
+                'verification_code' => $request->verification_code
+            ]);
+            $this->initResponse('success', $user, 200, 'data');
+        } catch (Exception $e) {
+            $this->initResponse('faild', $e->getMessage(), 400, 'error');
+        }
+        return response()->json($this->response, $this->code);
+    }
     function login(ClientLoginRequest $request)
     {
         //user not found

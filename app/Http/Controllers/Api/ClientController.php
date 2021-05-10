@@ -477,6 +477,24 @@ class ClientController extends Controller
         }
         return response()->json($this->response, $this->code);
     }
+    /**
+     * Display the specified resource.
+     *
+     * @param \App\Models\Api\Area $area
+     * @return \Illuminate\Http\Response
+     */
+    public function showMandub($id)
+    {
+        try {
+            $manub = Mandub::find($id);
+            $this->initResponse('success', $manub, 200, 'data');
+        } catch (Exception $e) {
+            $this->initResponse('faild', $e->getMessage(), 400, 'error');
+        }
+        return response()->json($this->response, $this->code);
+    }
+
+
 
 
 }

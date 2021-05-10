@@ -36,6 +36,7 @@ class Client extends Authenticatable implements JWTSubject
     ];
     protected $appends =['rate'];
 
+
     /**
      * hash password when created .
      */
@@ -90,6 +91,7 @@ class Client extends Authenticatable implements JWTSubject
     protected $hidden = [
         'password',
         'remember_token',
+        'rates'
     ];
     public $timestamps = true;
 

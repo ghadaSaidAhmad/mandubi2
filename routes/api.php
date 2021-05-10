@@ -37,12 +37,15 @@ Route::get('/getPaymentMethods','Api\ListsController@getPaymentMethods');
 Route::post('/client/login', "Api\Auth\ClientController@login");
 Route::post('/client/register', "Api\Auth\ClientController@register");
 Route::post('/client/completeRegister', "Api\Auth\ClientController@completeRegister");
+Route::post('/client/verifyMobile', "Api\Auth\ClientController@verifyMobile");
+
 
 
 
 //mandoub Route
 Route::post('/mandub/login', "Api\Auth\MandubController@login");
 Route::post('/mandub/register', "Api\Auth\MandubController@register");
+Route::post('/mandub/verifyMobile', "Api\Auth\MandubController@verifyMobile");
 
 
 
@@ -58,13 +61,12 @@ Route::middleware(['auth:clients','user.verify'])->group(function () {
     Route::post('/client/showOrder', "Api\ClientController@showOrder");
     Route::post('/client/updateFcmToken', "Api\ClientController@updateFcmToken");
     Route::post('/client/updateInfo', "Api\ClientController@updateInfo");
+    Route::get('/client/showMandub/{id}', "Api\ClientController@showMandub");
 
     Route::get('/client/{id}', "Api\ClientController@show");
     Route::get('/client/{id}/{notification}', "Api\ClientController@showNotification");
     Route::post('/client/rateMandub', "Api\ClientController@rateMandub");
-
-
-
+    Route::post('/client/addSuggation', "Api\AddSuggationController@AddClientSuggation");
 
 
 });
@@ -80,8 +82,10 @@ Route::group(['middleware' => 'auth:mandubs','user.verify'], function () {
     Route::post('/mandub/updateFcmToken', "Api\MandubController@updateFcmToken");
     Route::post('/mandub/updateInfo', "Api\MandubController@updateInfo");
     Route::get('/mandub/{id}', "Api\MandubController@show");
+    Route::get('/mandub/showClient/{id}', "Api\MandubController@showclient");
     Route::get('/mandub/{id}/{notification}', "Api\MandubController@showNotification");
     Route::post('/mandub/rateClient', "Api\MandubController@rateClient");
+    Route::post('/mandub/addSuggation', "Api\AddSuggationController@AddMandubSuggation");
 
     //order cycle
 
