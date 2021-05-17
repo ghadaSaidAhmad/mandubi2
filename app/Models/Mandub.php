@@ -67,7 +67,8 @@ class Mandub extends Authenticatable implements JWTSubject
         'fcm_token',
         'local',
         'phone_verified_at',
-        'verification_code'
+        'verification_code',
+        'get_message_from_admin'
 
 
     ];
@@ -91,7 +92,17 @@ class Mandub extends Authenticatable implements JWTSubject
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-    protected $appends =['rate'];
+    protected $appends =['rate','shipping_type_name'];
+
+    /**
+     * hash password when created .
+     */
+    public function getshippingTypeNameAttribute()
+    {
+        if ($this->shippingType) {
+            return  $this->shippingType();
+        }
+    }
 
     /**
      * hash password when created .
@@ -178,7 +189,7 @@ class Mandub extends Authenticatable implements JWTSubject
      */
     public function shippingType()
     {
-        return $this->hasOne(ShippingType::class);
+        return $this->belongsTo(ShippingType::class);
     }
 
     public function hasVerifiedMobile()

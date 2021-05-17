@@ -10,6 +10,7 @@ use App\Models\Client;
 use App\Models\Setting;
 use App\Models\MandubBalance;
 use App\Models\ClientRate;
+use App\Models\Message;
 use App\Models\Notification;
 use App\Http\Requests\SetActiveRequest;
 use App\Http\Requests\ClientRateRequest;
@@ -91,7 +92,7 @@ class MandubController extends Controller
     {
         try {
 
-            $user = Auth::user();
+            $user = auth('mandubs')->user();
 
             $newOrdersIds = $user->newOrders->pluck('id');
             $orders = $user->orders;
@@ -124,7 +125,7 @@ class MandubController extends Controller
 
         try {
 
-            $user = Auth::user();
+            $user = auth('mandubs')->user();
             $orders = Order::where('mandub_id', $user->id);//$user->orders;
             if ($request->state) {
                 $orders->where('order_state', $request->state);
@@ -183,7 +184,7 @@ class MandubController extends Controller
     public function getState()
     {
         try {
-            $user = Auth::user();
+            $user = auth('mandubs')->user();
             // dd($user->orders()->count());
             $order = $user->orders()->orderBy('updated_at', 'desc')->first();
             $data = [
@@ -224,6 +225,7 @@ class MandubController extends Controller
             //insert notification in database
             Notification::insert([
                 'order_id' => $order->id,
+
                 'mandub_id' => $user->id,
                 'client_id' => $order->client_id,
 
@@ -232,6 +234,7 @@ class MandubController extends Controller
             ]);
             $data = [
                 'order_id' => $order->id,
+                'order_price' => $order->price,
                 'order_state' => 2,
                 'order_code' => $order->code
             ];
@@ -258,9 +261,14 @@ class MandubController extends Controller
      */
     public function startTrip(Request $request)
     {
+        //dd('sdsd');
         try {
             $user = auth('mandubs')->user();
             $order = Order::find($request->orderId);
+            if(!$order){
+                $this->initResponse('faild','no order with this id', 400, 'error');
+                return response()->json($this->response, $this->code);
+            }
             $order->update(['order_state' => 4]);
             //TODO:: send notification
             //get tokens
@@ -268,11 +276,16 @@ class MandubController extends Controller
             $deviceTokens = Client::where('id', $order->client_id)
                 ->where('fcm_token', '!=', null)
                 ->pluck('fcm_token');
+            if(!$deviceTokens){
+                $this->initResponse('faild','no client with this id', 400, 'error');
+                return response()->json($this->response, $this->code);
+            }
             //notification
             $notification['title'] = 'new notification';
             $notification['body'] = $this->transNotification(4);
             $data = [
                 'order_id' => $order->id,
+                'order_price' => $order->price,
                 'order_state' => 4,
                 'order_code' => $order->code
             ];
@@ -322,6 +335,7 @@ class MandubController extends Controller
             $notification['body'] = $this->transNotification(5);
             $data = [
                 'order_id' => $order->id,
+                'order_price' => $order->price,
                 'order_state' => 5,
                 'order_code' => $order->code
             ];
@@ -329,6 +343,7 @@ class MandubController extends Controller
             $user = auth('mandubs')->user();
             Notification::insert([
                 'order_id' => $order->id,
+
                 'mandub_id' => $user->id,
                 'client_id' => $order->client_id,
                 'title' => 'mandub strat trip',
@@ -370,6 +385,7 @@ class MandubController extends Controller
             $notification['body'] = $this->transNotification(6);
             $data = [
                 'order_id' => $order->id,
+                'order_price' => $order->price,
                 'order_state' => 6,
                 'order_code' => $order->code
             ];
@@ -377,6 +393,7 @@ class MandubController extends Controller
             $user = auth('mandubs')->user();
             Notification::insert([
                 'order_id' => $order->id,
+
                 'mandub_id' => $user->id,
                 'client_id' => $order->client_id,
                 'title' => $this->transNotification(6),
@@ -423,11 +440,13 @@ class MandubController extends Controller
             $notification['body'] = $this->transNotification(7);
             $data = [
                 'order_id' => $order->id,
+                'order_price' => $order->price,
                 'order_state' => 7,
             ];
             $user = auth('mandubs')->user();
             Notification::insert([
                 'order_id' => $order->id,
+
                 'mandub_id' => $user->id,
                 'client_id' => $order->client_id,
                 'title' => $this->transNotification(7),
@@ -471,11 +490,13 @@ class MandubController extends Controller
             $notification['body'] = $this->transNotification(8);
             $data = [
                 'order_id' => $order->id,
+                'order_price' => $order->price,
                 'order_state' => 8,
             ];
             $user = auth('mandubs')->user();
             Notification::insert([
                 'order_id' => $order->id,
+
                 'mandub_id' => $user->id,
                 'client_id' => $order->client_id,
                 'title' => $this->transNotification(8),
@@ -519,11 +540,13 @@ class MandubController extends Controller
             $notification['body'] = $this->transNotification(9);
             $data = [
                 'order_id' => $order->id,
+                'order_price' => $order->price,
                 'order_state' => 9,
             ];
             $user = auth('mandubs')->user();
             Notification::insert([
                 'order_id' => $order->id,
+
                 'mandub_id' => $user->id,
                 'client_id' => $order->client_id,
                 'title' => $this->transNotification(9),
@@ -576,7 +599,7 @@ class MandubController extends Controller
                     'net_profit' => $orderobj->price - $commisson,
                 ]);
                 //TODO:: increse mandun balanace
-                $user = Auth::user();
+                $user =auth('mandubs')->user();
                 $mandub = Mandub::where('id', $user->id)->first();
                 $mandub->update([
                     'balance' => $mandub->balance + $commisson
@@ -592,11 +615,14 @@ class MandubController extends Controller
                 $notification['body'] = $this->transNotification(10);
                 $data = [
                     'order_id' => $orderobj->id,
+                    'order_price' => $orderobj->price,
                     'order_state' => 10,
                 ];
                 $user = auth('mandubs')->user();
                 Notification::insert([
                     'order_id' => $orderobj->id,
+
+
                     'mandub_id' => $user->id,
                     'client_id' => $orderobj->client_id,
                     'title' => $this->transNotification(10),
@@ -648,11 +674,21 @@ class MandubController extends Controller
     public function getMandubBalance(Request $request)
     {
         try {
-            $user = Auth::user();
+            $user = auth('mandubs')->user();
 
             $orders = MandubBalance::join('orders', 'mandub_balance.order_id', '=', 'orders.id')->where('mandub_balance.mandub_id', $user->id);//$user->orders;
             if ($request->state) {
                 $orders->where('order_state', $request->state);
+            }
+            //start date
+            if ($request->start_date) {
+                $start = date($request->start_date);
+                $orders->where('mandub_balance.created_at', '>=', $start);
+            }
+            //end date
+            if ($request->end_date) {
+                $end = date($request->end_date);
+                $orders->where('mandub_balance.created_at', '<=', $end);
             }
             //start end
             $orders = $orders->get(['mandub_balance.*']);
@@ -757,7 +793,11 @@ class MandubController extends Controller
     public function updateInfo(Request $request)
     {
         try {
-            $user = auth('clients')->user();
+            $user = auth('mandubs')->user();
+            if(!$user){
+                $this->initResponse('', 'no mandub with this token ', 404, 'data');
+                return response()->json($this->response, $this->code);
+            }
             $result = $user->update($request->except('_token'));
             if ($result) {
                 $this->initResponse('', 'info updated successfully ', 200, 'data');
@@ -767,6 +807,22 @@ class MandubController extends Controller
 
         } catch (Exception $e) {
             $this->initResponse('', $e->getMessage(), 400, 'error');
+        }
+        return response()->json($this->response, $this->code);
+    }
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function messages()
+    {
+        try{
+            $data = Message::get();
+            $this->initResponse('suessfulley listed',$data, 200, 'data');
+        }
+        catch(Exception $e){
+            $this->initResponse('faild', $e->getMessage(), 400, 'error');
         }
         return response()->json($this->response, $this->code);
     }

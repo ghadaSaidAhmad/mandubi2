@@ -32,6 +32,7 @@ Route::get('/getPaymentMethods','Api\ListsController@getPaymentMethods');
 
 
 
+
 /*======= End unauthenticated Route =======*/
 //client Route
 Route::post('/client/login', "Api\Auth\ClientController@login");
@@ -47,12 +48,9 @@ Route::post('/mandub/login', "Api\Auth\MandubController@login");
 Route::post('/mandub/register', "Api\Auth\MandubController@register");
 Route::post('/mandub/verifyMobile', "Api\Auth\MandubController@verifyMobile");
 
-
-
-
 // Only for customers
 Route::middleware(['auth:clients','user.verify'])->group(function () {
-
+    Route::get('/client/messages','Api\ClientController@getMessages');
     Route::get('/client/orders', "Api\ClientController@getOrders");
     Route::post('/client/filterOrders', "Api\ClientController@filterOrders");
     Route::post('/client/addOrder', "Api\ClientController@addOrder");
@@ -67,6 +65,8 @@ Route::middleware(['auth:clients','user.verify'])->group(function () {
     Route::get('/client/{id}/{notification}', "Api\ClientController@showNotification");
     Route::post('/client/rateMandub', "Api\ClientController@rateMandub");
     Route::post('/client/addSuggation', "Api\AddSuggationController@AddClientSuggation");
+    Route::get('/client/mandubs', "Api\ClientController@getMandubs");
+
 
 
 });
@@ -74,6 +74,7 @@ Route::middleware(['auth:clients','user.verify'])->group(function () {
 //mandub route 
 Route::group(['middleware' => 'auth:mandubs','user.verify'], function () {
 
+    Route::get('/mandub/messages','Api\MandubController@messages');
     Route::get('/mandub/orders', "Api\MandubController@getOrders");    
     Route::post('/mandub/filterOrders', "Api\MandubController@filterOrders");
     Route::post('/mandub/setActive', "Api\MandubController@setActive");
@@ -86,6 +87,7 @@ Route::group(['middleware' => 'auth:mandubs','user.verify'], function () {
     Route::get('/mandub/{id}/{notification}', "Api\MandubController@showNotification");
     Route::post('/mandub/rateClient', "Api\MandubController@rateClient");
     Route::post('/mandub/addSuggation', "Api\AddSuggationController@AddMandubSuggation");
+
 
     //order cycle
 

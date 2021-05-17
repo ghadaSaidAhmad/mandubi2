@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use App\Http\Requests\Traits\customErrorMessage;
 use App\Http\Traits\JsonResponse;
 
-class SetActiveRequest extends FormRequest
+class ClientSuggationRequest extends FormRequest
 {
     use customErrorMessage,	JsonResponse;
     /**
@@ -27,8 +27,15 @@ class SetActiveRequest extends FormRequest
     public function rules()
     {
         return [
-            'location_lat' => 'required',
-            'location_lat' => 'required',
+
+            'from_lang' => 'required',
+            'to_lang' => 'required',
+            'from_lat' => 'required',
+            'to_lat' => 'required',
+            'from_title' => 'required',
+            'to_title' => 'required',
+            'shipping_type_id' =>  'required',
+            'mandub_gender' => 'required',
         ];
     }
 }

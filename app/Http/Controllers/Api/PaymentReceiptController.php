@@ -29,6 +29,7 @@ class PaymentReceiptController extends Controller
                 File::isDirectory($destination) or File::makeDirectory($destination, 0777, true, true);  // make sure folder exists.
 
                 $imageName = microtime(time()) . "_" . $request->receipt_image->getClientOriginalName();
+
                 $request->receipt_image->move($destination, $imageName);
                 $payment->update(['receipt_image' => $imageName]);
             }

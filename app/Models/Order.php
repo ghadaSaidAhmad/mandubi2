@@ -15,7 +15,6 @@ class Order extends Model
      * @var array
      */
     protected $fillable = [
-        'code',
         'from_lang',
         'from_lat',
         'to_lang',
@@ -40,17 +39,6 @@ class Order extends Model
     protected $appends = [
         'order_state_type','client_name','mandub_name'
     ];
-    /**
-     * Set the proper slug attribute.
-     *
-     * @param string $value
-     */
-    public function setCodeAttribute($value){
-    if (static::whereSlug($slug = str_slug($value))->exists()) {
-        $slug = $this->incrementSlug($slug);
-    }
-    $this->attributes['slug'] = $slug;
-}
     protected $hidden = [
         'orderState',
     ];
@@ -70,7 +58,20 @@ class Order extends Model
         }
 
     }
-
+    /**
+     * Get the client of the trip .
+     */
+    public function shippingType()
+    {
+        return $this->belongsTo(ShippingType::class);
+    }
+    /**
+     * Get the client of the trip .
+     */
+    public function ShippingSpecification()
+    {
+        return $this->belongsTo(ShippingSpecifications::class);
+    }
 
     /**
      * Get the client of the trip .

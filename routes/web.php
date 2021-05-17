@@ -18,18 +18,16 @@ use App\Events\OrderStatusChanged;
 
 Route::group(['namespace' => 'Admin'], function () {
 
-   // Route::get('/', 'DashboardController@index');
+  //  Route::get('/', 'DashboardController@index');
     Route::get('login', 'AuthController@getIndex')->name('login');
     Route::get('logout', 'AuthController@getLogout');
-    Route::post('login', 'AuthController@postLogin')->name('login');;
+    Route::post('login', 'AuthController@postLogin');
 
 });
 
-
-
 Route::group([
     'namespace' => 'Admin',
-    'middleware' => 'auth'
+    'middleware' => 'auth:web'
 ], function () {
     //dashboard
     Route::get('/', 'DashboardController@index');
@@ -38,9 +36,6 @@ Route::group([
     Route::post('/users/search', 'UsersController@search')->name('users.search');
     Route::resource('/users', 'UsersController');
 });
-
-
-
 
 // Demo routes
 

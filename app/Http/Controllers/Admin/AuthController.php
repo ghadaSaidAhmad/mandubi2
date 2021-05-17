@@ -10,7 +10,7 @@ class AuthController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('guest', ['except' => 'getLogout']);
+       // $this->middleware('guest', ['except' => 'getLogout']);
     }
 
     /**
@@ -26,14 +26,16 @@ class AuthController extends Controller
     
     public function postLogin(LoginRequest $request)
     {
+     //   dd( Auth::user()->type);
         $credentials = $request->only('email', 'password');
-        if (\Auth::attempt($credentials)) {
-          // login the user
-          session()->save();
-          return redirect('/')->with('success','تم الدخول بنجاح');
+      //  dd(auth('web')->attempt($credentials));
+        if (auth('web')->attempt($credentials)) {
+           // dd('true');
+            return redirect()->intended('/users');
         }
+        dd('sdsd');
         // failed
-       return redirect()->back()->with('error' , trans('admin_global.msg_error_login'));
+       return redirect()->back()->with('error' ,'حدث خطأ!');
     }
 
     /**

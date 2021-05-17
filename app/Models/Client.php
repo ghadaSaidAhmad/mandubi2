@@ -32,7 +32,9 @@ class Client extends Authenticatable implements JWTSubject
         'admin_agree',
         'complete_register',
         'fcm_token',
-        'local'
+        'local',
+        'get_message_from_admin'
+
     ];
     protected $appends =['rate'];
 

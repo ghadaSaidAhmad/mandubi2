@@ -8,21 +8,31 @@ use Illuminate\Database\Eloquent\Model;
 class Notification extends Model
 {
     use HasFactory;
-    protected $fillable=['title','content','order_id','mandub_id','client_id'];
+    protected $fillable = ['title', 'content', 'order_id', 'mandub_id', 'client_id'];
     protected $appends = [
-        'client_name','mandub_name','order_state'
+        'client_name', 'mandub_name', 'order_state', 'order_price'
     ];
+
+    public function getOrderPriceAttribute()
+    {
+        if ($this->order) {
+            return $this->order->price;
+        }
+
+    }
 
     public function getOrderStateAttribute()
     {
-        return $this->order->order_state;
-
+        if ($this->order) {
+            return $this->order->order_state;
+        }
     }
 
     public function order()
     {
         return $this->belongsTo(Order::class);
     }
+
     /**
      * Get the client of the trip .
      */
@@ -39,19 +49,22 @@ class Notification extends Model
 
         return $this->belongsTo(Mandub::class);
     }
+
     public function getClientNameAttribute()
     {
-        if($this->client){
+        if ($this->client) {
             return $this->client->name;
         }
         return null;
     }
+
     public function getMandubNameAttribute()
     {
-        if($this->mandub){
+        if ($this->mandub) {
             return $this->mandub->name;
         }
         return null;
 
     }
+
 }

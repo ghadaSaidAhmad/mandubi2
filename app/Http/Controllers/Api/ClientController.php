@@ -10,6 +10,7 @@ use App\Models\Client;
 use App\Models\Notification;
 use App\Models\MandubOrders;
 use App\Models\MandubRate;
+use App\Models\Message;
 use App\Models\Image;
 use Auth;
 use App\Http\Requests\Auth\ClientCompleteRegisterRequest;
@@ -107,6 +108,10 @@ class ClientController extends Controller
                 ->where('active_now', 1)
                 ->pluck('id');
 
+            if(!count($mandubsIDs)>0){
+                $this->initResponse('no mandubs match carteria', null, 200, 'data');
+                return response()->json($this->response, $this->code);
+            }
             if ($mandubsIDs) {
 
                 foreach ($mandubsIDs as $mandubId) {
@@ -120,9 +125,8 @@ class ClientController extends Controller
                         'order_id' => $order->id,
                         'mandub_id' => $mandubId,
                         'client_id' => $user->id,
-
-                        'title' => 'new order',
-                        'content' => $this->transNotification(1)
+                        'title' => 'new order*',
+                        'content' => $this->transNotification(1).$user->name
                     ]);
                 }
             }
@@ -133,10 +137,11 @@ class ClientController extends Controller
                 ->pluck('fcm_token')->toArray();
             //notification
             $notification['title'] = 'new order';
-            $notification['body'] = $this->transNotification(1);
+            $notification['body'] = $this->transNotification(1).$user->name;
             $data = [
                 'order_id' => $order->id,
-
+                'client_name' => $user->name,
+                'order_price' => $order->price,
                 'order_code' => $order->code
             ];
             $report = $this->sendMultiNotification($notification, $deviceTokens, $data);
@@ -220,7 +225,7 @@ class ClientController extends Controller
     {
         try {
 
-            $user = Auth::user();
+            $user = auth('clients')->user();
             $orders = $user->orders->all();
             if ($orders) {
                 $data = ['status' => true, 'msg' => 'Success.', 'orders' => $orders];
@@ -242,7 +247,7 @@ class ClientController extends Controller
     public function filterOrders(Request $request)
     {
         try {
-            $user = Auth::user();
+            $user =  auth('clients')->user();
             $orders = Order::where('client_id', $user->id);//$user->orders;
             if ($request->state) {
                 $orders->where('order_state', $request->state);
@@ -316,7 +321,7 @@ class ClientController extends Controller
     {
         try {
             $mandub = Mandub::find($request->mandubId);
-            $user = Auth::user();
+            $user =  auth('clients')->user();
             if (!$mandub) {
                 $this->initResponse('no mandub with this id' . $request->mandubId, null, 200, 'data');
             } else {
@@ -336,12 +341,14 @@ class ClientController extends Controller
                 $notification['body'] = $this->transNotification(3);
                 $data = [
                     'order_id' => $order->id,
+                    'order_price' => $order->price,
                     'order_state' => 3,
                     'order_code' => $order->code
                 ];
                 //insert notification in database
                 Notification::insert([
                     'order_id' => $order->id,
+
                     'mandub_id' => $request->mandubId,
                     'client_id' => $user->id,
                     'title' => 'client accept mandub',
@@ -375,7 +382,7 @@ class ClientController extends Controller
     public function showOrder(Request $request)
     {
         try {
-            $order = Order::where('id', $request->orderId)->where('client_id', Auth::user()->id)->first();
+            $order = Order::where('id', $request->orderId)->where('client_id', auth('clients')->user()->id)->first();
             if ($order) {
                 $this->initResponse('success ', $order, 200, 'data');
             } else {
@@ -493,7 +500,39 @@ class ClientController extends Controller
         }
         return response()->json($this->response, $this->code);
     }
+    /**
+     * Display the specified resource.
+     *
+     * @param \App\Models\Api\Area $area
+     * @return \Illuminate\Http\Response
+     */
+    public function getMandubs()
+    {
+        try {
+            $manubs = Mandub::get();
+            $this->initResponse('success', $manubs, 200, 'data');
+        } catch (Exception $e) {
+            $this->initResponse('faild', $e->getMessage(), 400, 'error');
+        }
+        return response()->json($this->response, $this->code);
+    }
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getMessages()
+    {
+        try{
+            $data = Message::get();
 
+            $this->initResponse('suessfulley listed',$data, 200, 'data');
+        }
+        catch(Exception $e){
+            $this->initResponse('faild', $e->getMessage(), 400, 'error');
+        }
+        return response()->json($this->response, $this->code);
+    }
 
 
 

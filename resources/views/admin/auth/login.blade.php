@@ -75,7 +75,8 @@ License: You must have a valid license purchased only from themeforest(the above
 							<!--begin::Form-->
 							<form class="form" method="POST" action="{{ route('login') }}"  id="kt_login_signin_form" style="text-align: right;">
 								<!--begin::Title-->
-								{!! csrf_field() !!}
+
+								@csrf
 								<div class="pb-13 pt-lg-0 pt-5">
 									<h3 class="font-weight-bolder text-dark font-size-h4 font-size-h1-lg"> تسجيــــــل دخول </h3>
 
